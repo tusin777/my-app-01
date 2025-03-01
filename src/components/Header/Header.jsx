@@ -1,6 +1,6 @@
 import "./Header.css";
 
-function Header({ clicks, text }) {
+function Header() {
   const style = {
     color: "blue",
     fontSize: "1rem",
@@ -12,9 +12,6 @@ function Header({ clicks, text }) {
   return (
     <header className="container" style={style}>
       <h1>Заголовок</h1>
-
-      <p>{clicks}</p>
-      <p>{text}</p>
     </header>
   );
 }
