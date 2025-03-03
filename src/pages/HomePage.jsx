@@ -1,16 +1,14 @@
-//import UserList from "./UserList";
-//import { Tasks } from "./Tasks";
-// import { Comments } from "./Comments";
-import { Products } from "./Products";
+import ControlledForm from "./ControlledForm";
+// import UncontrolledForm from "./UncontrolledForm";
+// import MixedForm from "./MixedForm";
 import "./HomePage.css";
 
 function HomePage() {
   return (
     <>
-      {/* <UserList /> */}
-      {/* <Tasks /> */}
-      {/* <Comments /> */}
-      <Products />
+      <ControlledForm />
+      {/* <UncontrolledForm />
+      <MixedForm /> */}
     </>
   );
 }
