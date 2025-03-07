@@ -1,12 +1,19 @@
+import { useState } from "react";
 import Header from "../Header/Header";
 import HomePage from "../../pages/HomePage";
 import { Footer } from "../Footer/Footer";
 import "./App.css";
 
 function App() {
+  const [theme, setTheme] = useState("light"); // По умолчанию светлая тема
+
+  // Функция для переключения темы
+  const toggleTheme = () => {
+    setTheme((prevTheme) => (prevTheme === "light" ? "dark" : "light"));
+  };
   return (
-    <main className="app">
-      <Header />
+    <main className="app" data-theme={theme}>
+      <Header theme={theme} toggleTheme={toggleTheme} />
       <HomePage />
       <Footer />
     </main>

@@ -1,9 +1,12 @@
 import "./Header.css";
 
-function Header() {
+function Header({ theme, toggleTheme }) {
   return (
-    <header className="container">
-      <h2>Заголовок</h2>
+    <header className="header">
+      <h1>Заголовок</h1>
+      <button onClick={toggleTheme} className="buttonSwitcher">
+        Переключить {theme === "light" ? "Dark" : "Light"} тему
+      </button>
     </header>
   );
 }
