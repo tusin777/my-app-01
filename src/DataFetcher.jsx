@@ -6,13 +6,16 @@ export function DataFetcher() {
   const [loading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchData = async () => {
       try {
         const response = await fetch(
           "https://jsonplaceholder.typicode.com/posts?_limit=5"
         );
         const result = await response.json();
-        setData(result);
+        if (isMounted) {
+          setData(result);
+        }
       } catch (error) {
         console.error(error.message);
       } finally {
@@ -21,7 +24,11 @@ export function DataFetcher() {
     };
 
     fetchData();
-  }, []);
+
+    return () => {
+      isMounted = false;
+    };
+  }, [count]);
 
   if (loading) {
     return <div>Загрузка...</div>;

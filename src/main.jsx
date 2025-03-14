@@ -1,11 +1,15 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import { DataFetcher } from "./DataFetcher";
-import { Counter } from "./Counter";
+//import { DataFetcher } from "./DataFetcher";
+import App from "./App";
+import Cleanup from "./Cleanup";
+import WindowSize from "./WindowSize";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     {/* <DataFetcher /> */}
-    <Counter />
+    {/* <App /> */}
+    <Cleanup />
+    {/* <WindowSize /> */}
   </StrictMode>
 );
