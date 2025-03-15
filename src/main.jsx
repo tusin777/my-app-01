@@ -5,7 +5,7 @@ import { RefComponents } from "./RefComponent";
 import { RefComponentEffect } from "./RefComponentEffect";
 import NumberTracker from "./NumberTracker";
 import UserComponent from "./UserComponent";
-import { CustomVideoPlayer } from "./CustomVideoPlayer";
+import CustomVideoPlayer from "./CustomVideoPlayer";
 import AdvancedAudioPlayer from "./AdvancedAudioPlayer";
 
 createRoot(document.getElementById("root")).render(
