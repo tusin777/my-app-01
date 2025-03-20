@@ -1,39 +1,52 @@
-import useForm from "./hooks/useForm";
-import { LoginForm } from "./LoginForm";
-import { RegisterForm } from "./RegisterForm";
-import { ProfileForm } from "./ProfileForm";
+import { useEffect, useState } from "react";
 
 const App = () => {
-  const loginData = useForm({});
-  const registerData = useForm({});
-  const profileData = useForm({});
+  const key = "name";
+  const initialValue = "Гость";
 
-  const handleSubmit = (e, formType) => {
-    e.preventDefault();
-    if (formType === "login") {
-      console.log("Данные авторизации", loginData.formData);
-    } else if (formType === "password") {
-      console.log("Данные регистрации", loginData.formData);
-    } else formType === "";
-    {
-      console.log("Иные данные", profileData.formData);
+  const getStoredValue = () => {
+    try {
+      const item = localStorage.getItem(key);
+      return item ? JSON.parse(item) : initialValue;
+    } catch (error) {
+      console.error("Ошибка чтения данных из localStorage", error);
+      return initialValue;
+    }
+  };
+  const [name, setName] = useState(getStoredValue());
+
+  const handleSetName = (newName) => {
+    try {
+      setName(newName);
+      localStorage.setItem(key, JSON.stringify(newName));
+    } catch (error) {
+      console.error("Ошибка добавления в localStorage", error);
     }
   };
 
+  const handleRemoveName = () => {
+    try {
+      setName(initialValue);
+      localStorage.removeItem(key);
+    } catch (error) {
+      console.error("Ошибка удаления из localStorage", error);
+    }
+  };
+
+  useEffect(() => {
+    setName(getStoredValue());
+  }, [key]);
+
   return (
     <div>
-      <h1>Авторизация</h1>
-      <LoginForm
-        {...loginData}
-        handleSubmit={(e) => handleSubmit(e, "login")}
+      <h1>Привет, {name}!</h1>
+      <input
+        type="text"
+        value={name}
+        onChange={(e) => handleSetName(e.target.value)}
+        placeholder="Введите ваше имя"
       />
-      <h1>Регистрация</h1>
-      <RegisterForm
-        {...registerData}
-        handleSubmit={(e) => handleSubmit(e, "password")}
-      />
-      <p>---------------</p>
-      <ProfileForm {...profileData} handleSubmit={(e) => handleSubmit(e, "")} />
+      <button onClick={handleRemoveName}>Очистить имя</button>
     </div>
   );
 };
