@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+
 export const useLocalStorage = (key, initialValue) => {
   const getStoredValue = () => {
     try {
@@ -9,7 +11,29 @@ export const useLocalStorage = (key, initialValue) => {
     }
   };
 
-  const [storedValue, setName] = useState(getStoredValue());
+  const [storedValue, setStoredValue] = useState(getStoredValue);
+
+  const setValue = (value) => {
+    try {
+      setStoredValue(value);
+      localStorage.setItem(key, JSON.stringify(value));
+    } catch (error) {
+      console.error("Ошибка добавления в localStorage", error);
+    }
+  };
+
+  const removeValue = () => {
+    try {
+      localStorage.removeItem(key);
+      setStoredValue(initialValue);
+    } catch (error) {
+      console.error("Ошибка удаления из localStorage", error);
+    }
+  };
+
+  useEffect(() => {
+    setStoredValue(getStoredValue());
+  }, [key]);
 
   return [storedValue, setValue, removeValue];
 };
