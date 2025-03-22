@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useDebugValue } from "react";
 
 export const useLocalStorage = (key, initialValue) => {
   const getStoredValue = () => {
@@ -34,6 +34,12 @@ export const useLocalStorage = (key, initialValue) => {
   useEffect(() => {
     setStoredValue(getStoredValue());
   }, [key]);
+
+  useDebugValue(
+    { key, storedValue },
+    ({ key, storedValue }) =>
+      `Key: ${key}, Value: ${JSON.stringify(storedValue)}`
+  );
 
   return [storedValue, setValue, removeValue];
 };
