@@ -1,11 +1,17 @@
-import Counter from "./Counter";
-import Todo from "./Todo";
+import { BasicExample } from "./BasicExample";
+import { FilterExample } from "./FilterExample";
+import { SlowRenderExample } from "./SlowRenderExample";
+import { TabExample } from "./TabExample";
+import { SyncTabExample } from "./SyncTabExapmle";
 
 const App = () => {
   return (
     <>
-      <Counter />
-      <Todo />
+      {/* <BasicExample /> */}
+      {/* <SlowRenderExample />*/}
+      {/* <FilterExample /> */}
+      <TabExample />
+      <SyncTabExample />
     </>
   );
 };
