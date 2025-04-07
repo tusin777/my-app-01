@@ -1,7 +1,21 @@
 import { useState, useEffect } from "react";
-
-const LOCAL_STORAGE_KEY = "todos";
-const API_URL = "https://67ed28164387d9117bbc7da1.mockapi.io/api/v1/todos";
+import { API_URL } from "../constants/todos";
+import {
+  createNewTodo,
+  sortedSavedTodos,
+  toggleTodoCompletion,
+  updateTodoData,
+} from "../helpers/todoHelpers";
+import {
+  loadFromLocalStorage,
+  saveToLocalStorage,
+} from "../helpers/storage.js";
+import {
+  fetchTodos,
+  createTodo,
+  updateTodo,
+  deleteTodo,
+} from "../api/todoApi.js";
 
 export const useTodoManagement = () => {
   const [todos, setTodos] = useState([]);
@@ -10,27 +24,15 @@ export const useTodoManagement = () => {
 
   useEffect(() => {
     const loadInitialData = async () => {
-      const savedTodos = JSON.parse(
-        localStorage.getItem(LOCAL_STORAGE_KEY) || "[]"
-      );
+      const savedTodos = sortedSavedTodos(loadFromLocalStorage());
 
-      const sortedSavedTodos = [...savedTodos].sort(
-        (a, b) => a.order - b.order
-      );
-
-      setTodos(sortedSavedTodos);
+      setTodos(savedTodos);
 
       try {
-        const response = await fetch(API_URL);
-
-        if (response.ok) {
-          const serverTodos = await response.json();
-          const sortedServerTodos = [...serverTodos].sort(
-            (a, b) => a.order - b.order
-          );
-          setTodos(sortedServerTodos);
-          localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(serverTodos));
-        }
+        const serverTodos = await fetchTodos();
+        const sortedServerTodos = sortedSavedTodos(serverTodos);
+        setTodos(sortedServerTodos);
+        saveToLocalStorage(sortedServerTodos);
       } catch (error) {
         console.error("Ошибка загрузки данных:", error);
       }
@@ -39,33 +41,17 @@ export const useTodoManagement = () => {
   }, []);
 
   const onAdd = async (text, deadline) => {
-    const newTodo = {
-      id: `temp_${Date.now()}`,
-      text,
-      completed: false,
-      createdAt: new Date().toISOString(),
-      deadline: deadline || null,
-      order: todos.length + 1,
-    };
-
+    const newTodo = createNewTodo(text, deadline, todos.length + 1);
     const updatedTodos = [...todos, newTodo];
     setTodos(updatedTodos);
 
     try {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newTodo),
-      });
-
-      const createdTodo = await response.json();
-
+      const createdTodo = await createTodo(newTodo);
       const syncedTodos = updatedTodos.map((todo) =>
         todo.id === newTodo.id ? createdTodo : todo
       );
-
       setTodos(syncedTodos);
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(syncedTodos));
+      saveToLocalStorage(syncedTodos);
     } catch (error) {
       console.error("Ошибка добавления:", error);
       setTodos(todos);
@@ -77,11 +63,7 @@ export const useTodoManagement = () => {
 
     if (!todoToUpdate) return;
 
-    const updatedTodo = {
-      ...todoToUpdate,
-      text: newText,
-      deadline: newDeadline,
-    };
+    const updatedTodo = updateTodoData(todoToUpdate, newText, newDeadline);
 
     const updatedTodos = todos.map((todo) =>
       todo.id === id ? updatedTodo : todo
@@ -90,14 +72,8 @@ export const useTodoManagement = () => {
     setTodos(updatedTodos);
 
     try {
-      await fetch(`${API_URL}/${id}`, {
-        method: "PUT",
-
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedTodo),
-      });
-
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedTodos));
+      await updateTodo(id, updatedTodo);
+      saveToLocalStorage(updatedTodos);
     } catch (error) {
       console.error("Ошибка обновления:", error);
       setTodos(todos);
@@ -109,10 +85,7 @@ export const useTodoManagement = () => {
 
     if (!todoToUpdate) return;
 
-    const updatedTodo = {
-      ...todoToUpdate,
-      completed: !todoToUpdate.completed,
-    };
+    const updatedTodo = toggleTodoCompletion(todoToUpdate);
 
     const updatedTodos = todos.map((todo) =>
       todo.id === id ? updatedTodo : todo
@@ -121,14 +94,8 @@ export const useTodoManagement = () => {
     setTodos(updatedTodos);
 
     try {
-      await fetch(`${API_URL}/${id}`, {
-        method: "PUT",
-
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedTodo),
-      });
-
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedTodos));
+      await updateTodo(id, updatedTodo);
+      saveToLocalStorage(updatedTodos);
     } catch (error) {
       console.error("Ошибка обновления:", error);
       setTodos(todos);
@@ -141,18 +108,15 @@ export const useTodoManagement = () => {
     setTodos(updatedTodos);
 
     try {
-      await fetch(`${API_URL}/${id}`, { method: "DELETE" });
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedTodos));
+      await deleteTodo(id);
     } catch (error) {
       console.error("Ошибка удаления:", error);
       setTodos(previousTodos);
     }
   };
 
-  const hasCompletedTodos = todos.some((todo) => todo.completed);
-
   const handleDeleteCompleted = () => {
-    if (!hasCompletedTodos) return;
+    if (!todos.some((todo) => todo.completed)) return;
     setIsDeletingCompleted(true);
   };
 
@@ -169,7 +133,7 @@ export const useTodoManagement = () => {
 
     for (const id of completedIds) {
       try {
-        await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+        await deleteTodo(id);
       } catch (error) {
         console.error(`Ошибка удаления задачи ${id}:`, error);
         failedIds.push(id);
@@ -184,7 +148,8 @@ export const useTodoManagement = () => {
       );
     }
 
-    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(todos));
+    saveToLocalStorage(todos);
+
     setIsDeletingCompleted(false);
   };
 
@@ -200,7 +165,7 @@ export const useTodoManagement = () => {
 
       const newTodos = [...todos];
       const [movedTodo] = newTodos.splice(activeIndex, 1);
-      console.log([movedTodo])
+      console.log([movedTodo]);
       newTodos.splice(overIndex, 0, movedTodo);
 
       const updatedTodos = newTodos.map((todo, index) => ({
@@ -211,16 +176,9 @@ export const useTodoManagement = () => {
       setTodos(updatedTodos);
 
       await Promise.all(
-        updatedTodos.map((todo) =>
-          fetch(`${API_URL}/${todo.id}`, {
-            method: "PUT",
-
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ order: todo.order }),
-          })
-        )
+        updatedTodos.map((todo) => updateTodo(todo.id, { order: todo.order }))
       );
-      localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(updatedTodos));
+      saveToLocalStorage(updatedTodos);
     } catch (error) {
       console.error("Ошибка изменения порядка", error);
       setTodos(todos);
@@ -239,7 +197,6 @@ export const useTodoManagement = () => {
     handleDelete,
     handleDeleteCompleted,
     confirmDeleteCompleted,
-    hasCompletedTodos,
     onReorder,
   };
 };
