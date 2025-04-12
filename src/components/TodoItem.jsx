@@ -66,25 +66,28 @@ export const TodoItem = ({ todo, onDelete, onToggleComplete, onUpdate }) => {
       className="group flex items-center 
     justify-between p-4 gap-3 bg-white dark:bg-page-dark rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 border border-gray-100"
     >
-      <div
-        {...listeners}
-        className="h-6 w-4 border-l-6 border-r-6 border-gray-300 border-dotted mx-0.5 cursor-grab active:cursor-grabbing"
-      ></div>
-      <div className="flex items-center gap-3">
-        <CheckboxButton completed={todo.completed} onClick={handleToggle} />
-        {isEditing ? (
-          <TodoEditForm
-            editText={editText}
-            setEditText={setEditText}
-            editDeadline={editDeadline}
-            setEditDeadline={setEditDeadline}
-            innerRef={editFormRef}
-            onSave={handleSave}
-          />
-        ) : (
-          <TodoTextDisplay todo={todo} setIsEditing={setIsEditing} />
-        )}
+      <div className="flex flex-row items-center gap-2">
+        <div
+          {...listeners}
+          className="h-6 w-4 border-l-6 border-r-6 border-gray-300 border-dotted mx-0.5 cursor-grab active:cursor-grabbing"
+        ></div>
+        <div className="flex items-center gap-3">
+          <CheckboxButton completed={todo.completed} onClick={handleToggle} />
+          {isEditing ? (
+            <TodoEditForm
+              editText={editText}
+              setEditText={setEditText}
+              editDeadline={editDeadline}
+              setEditDeadline={setEditDeadline}
+              innerRef={editFormRef}
+              onSave={handleSave}
+            />
+          ) : (
+            <TodoTextDisplay todo={todo} setIsEditing={setIsEditing} />
+          )}
+        </div>
       </div>
+
       <DeleteButton onClick={() => onDelete(todo.id)} />
     </div>
   );
