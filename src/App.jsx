@@ -1,74 +1,35 @@
-import { useState, lazy, Suspense } from "react";
-import ToggleTheme from "./components/ToggleTheme";
-import { getInitialTheme } from "./helpers/getInitialTheme";
-import { toggleTheme } from "./helpers/toggleTheme";
-import DeleteConfirmModal from "./components/DeleteConfirmModal";
-import { useTodoManagement } from "./hooks/useTodoManagement";
-import DeleteCompletedButton from "./components/DeleteCompletedButton";
-import Loader from "./components/Loader";
+import { Routes, Route } from "react-router";
+import HomePage from "./pages/HomePage";
+import AboutPage from "./pages/AboutPage";
+import NotFoundPage from "./pages/NotFoundPage";
+import AuthLayout from "./pages/AuthLayout";
+import LoginPage from "./pages/LoginPage";
+import RegPage from "./pages/RegPage";
 
-const MainContent = lazy(() => import("./components/MainContent"));
+export const AppRoutes = {
+  HOME: "/",
+  ABOUT: "/about",
+  AUTH: "/auth",
+  LOGIN: "login",
+  REG: "register",
+  NOT_FOUND: "*",
+};
 
 function App() {
-  const [theme, setTheme] = useState(getInitialTheme());
-
-  const {
-    todos,
-    deletingId,
-    setDeletingId,
-    isDeletingCompleted,
-    setIsDeletingCompleted,
-    onAdd,
-    handleUpdate,
-    toggleComplete,
-    handleDelete,
-    handleDeleteCompleted,
-    confirmDeleteCompleted,
-    hasCompletedTodos,
-    onReorder,
-  } = useTodoManagement();
-
   return (
-    <div
-      data-theme={theme}
-      className="flex flex-col min-h-screen justify-center items-center bg-page-light dark:bg-page-dark p-6"
-    >
-      <ToggleTheme toggleTheme={() => toggleTheme(setTheme)} theme={theme} />
-      <Suspense fallback={<Loader />}>
-        <MainContent
-          onAdd={onAdd}
-          todos={todos}
-          handleUpdate={handleUpdate}
-          toggleComplete={toggleComplete}
-          setDeletingId={setDeletingId}
-          onReorder={onReorder}
-        />
-      </Suspense>
+    <Routes>
+      <Route index element={<HomePage />} />
+      <Route path={AppRoutes.ABOUT} element={<AboutPage />} />
+      <Route path={AppRoutes.AUTH} element={<AuthLayout />} />
 
-      <DeleteConfirmModal
-        deletingId={deletingId}
-        onCancel={() => setDeletingId(null)}
-        onConfirm={() => {
-          handleDelete(deletingId);
-          setDeletingId(null);
-        }}
-        message="Вы уверены, что хотите удалить эту задачу?"
+      <Route
+        path={`${AppRoutes.AUTH}/${AppRoutes.LOGIN}`}
+        element={<LoginPage />}
       />
+      <Route path="/auth/register" element={<RegPage />} />
 
-      <DeleteConfirmModal
-        isDeletingCompleted={isDeletingCompleted}
-        onCancel={() => setIsDeletingCompleted(false)}
-        onConfirm={confirmDeleteCompleted}
-        message={`Вы уверены, что хотите удалить все выполненные задачи (${
-          todos.filter((todo) => todo.completed).length
-        })?`}
-      />
-
-      <DeleteCompletedButton
-        onClick={handleDeleteCompleted}
-        hasCompletedTodos={hasCompletedTodos}
-      />
-    </div>
+      <Route path={AppRoutes.NOT_FOUND} element={<NotFoundPage />} />
+    </Routes>
   );
 }
 
