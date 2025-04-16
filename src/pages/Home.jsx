@@ -1,12 +1,15 @@
-const Home = () => {
+import { Link } from "react-router";
+
+export default function Home() {
   return (
     <div>
       <h1>Добро пожаловать!</h1>
-      <p>Это простое приложение с динамическими страницами пользователей</p>
-      <p>Попробуйте перейти по ссылкам выше или введите в адресной строке:</p>
-      <code>/user/любое число</code>
+      <p>Это простое приложение с защищенными маршрутами.</p>
+      <Link to="/about">О нас</Link>
+      <br />
+      <Link to="/contacts">Наши контакты</Link>
+      <br />
+      <Link to="/login">Выйти</Link>
     </div>
   );
-};
-
-export default Home;
+}

@@ -1,14 +1,29 @@
+import { BrowserRouter, Routes, Route } from "react-router";
 import Home from "./pages/Home";
-import { Routes, Route } from "react-router";
-import { UserPage } from "./pages/UserPage";
+import About from "./pages/About";
+import Login from "./pages/Login";
+import NotFoundPage from "./pages/NotFoundPage";
+import Contacts from "./pages/Contacts";
+import { useState } from "react";
+import PrivateRoute from "./components/PrivateRoute";
 
 function App() {
-  return (
-    <Routes>
-      <Route path="/" element={<Home />} />
+  const [isAuth, setIsAuth] = useState(false);
 
-      <Route path="/user/:userId" element={<UserPage />} />
-    </Routes>
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path={"/"} element={<Home />} />
+
+        <Route element={<PrivateRoute isAuth={isAuth} />}>
+          <Route path={"/about"} element={<About />} />
+          <Route path={"/contacts"} element={<Contacts />} />
+        </Route>
+
+        <Route path={"/login"} element={<Login setIsAuth={setIsAuth} />} />
+        <Route path={"*"} element={<NotFoundPage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 
