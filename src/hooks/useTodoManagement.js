@@ -210,19 +210,7 @@ export const useTodoManagement = () => {
 
       setTodos(updatedTodos);
 
-      // for (const todo of updatedTodos) {
-      //   try {
-      //     await fetch(`${API_URL}/${todo.id}`, {
-      //       method: "PUT",
-      //       headers: { "Content-Type": "application/json" },
-      //       body: JSON.stringify({ order: todo.order }),
-      //     });
-      //   } catch (error) {
-      //     console.error(`Ошибка обновления задачи ${todo.id}:`, error);
-      //     // Можно добавить откат или повторную попытку
-      //   }
-      // }
-      // localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(serverTodos));
+      
 //-------------------------------------------------------
       await Promise.all(
         updatedTodos.map((todo) =>
