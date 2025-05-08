@@ -10,6 +10,19 @@ export function AddTodo({ onAdd }) {
   const [isListening, setIsListening] = useState(false);
   const [recognition, setRecognition] = useState(null);
   const finalTextRef = useRef("");
+  // const inputRef = useRef(null); // Добавляем ref для input
+
+    // // Функция для перемещения курсора в конец input
+  // const moveCursorToEnd = () => {
+  //   if (inputRef.current) {
+  //     inputRef.current.focus();
+  //     const length = inputRef.current.value.length;
+  //     inputRef.current.setSelectionRange(length, length);
+      
+  //     // Прокручиваем input до конца, если текст не помещается
+  //     inputRef.current.scrollLeft = inputRef.current.scrollWidth;
+  //   }
+  // };
 
   const startListening = () => {
     if (recognition) {
@@ -23,6 +36,7 @@ export function AddTodo({ onAdd }) {
       recognition.stop();
       setIsListening(false);
       setText(finalTextRef.current);
+      // moveCursorToEnd(); // Перемещаем курсор в конец при остановке записи
     }
   };
 
@@ -65,6 +79,7 @@ export function AddTodo({ onAdd }) {
               setText(finalTextRef.current + " " + interimScript);
             }
           }
+          // moveCursorToEnd(); // Перемещаем курсор в конец при каждом обновлении текста
         };
 
         recognitionInstance.onerror = (event) => {
@@ -110,8 +125,9 @@ export function AddTodo({ onAdd }) {
           onChange={(e) => {
             setText(e.target.value);
           }}
+          // ref={inputRef} // Добавляем ref к input
           placeholder="Добавить задачу..."
-          className="flex-1 p-3 text-gray-700 dark:bg-page-dark dark:text-txt-dark outline-none placeholder-gray-400"
+          className="flex-1 p-3 text-gray-200 dark:bg-page-dark dark:text-txt-dark outline-none placeholder-gray-400"         
         />
         <button
           type="button"
