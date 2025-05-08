@@ -113,7 +113,7 @@ export function AddTodo({ onAdd }) {
             setText(e.target.value);
           }}
           placeholder="Добавить задачу..."
-          className="flex-1 p-3 text-gray-700 outline-none placeholder-gray-400"
+          className="flex-1 p-3 text-gray-200 outline-none placeholder-gray-400"
         />
         <div className="flex items-center w-full justify-end max-[374px]:justify-center border-1 min-[375px]:border-0">
           <button
